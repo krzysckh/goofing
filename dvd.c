@@ -18,6 +18,9 @@
                        at((x),(y)).b = (c).b; \
                        at((x),(y)).a = (c).a; }
 
+#define update_color() {F = *(Px*)(uint32_t[1]){ colors[cur_color++] }; \
+    cur_color = cur_color % colors_len;};
+
 /* TODO: replace this with a less-cursed dvd logo */
 /* i drew this one myself in gimp B) */
 static uint16_t dvd[] = {
@@ -38,9 +41,19 @@ static uint16_t dvd[] = {
   0xfe6c, 0x337f, 0xfe0e, 0x307f,
   0xfe1e, 0x70ff, 0xffff, 0xffff,
 };
-static uint8_t dvd_len = sizeof(dvd) / sizeof(*dvd);
 
-static Px F  = { 0xcc, 0xcc, 0x00, 0xff };
+static uint32_t colors[] = {
+  0xff017b7b, 0xff020c7b, 0xff027b00, 0xff7a197b,
+  0xff387b7b, 0xff393902, 0xffff3338, 0xff0025ff,
+  0xff01fbff, 0xff01f902, 0xfffe40ff, 0xff7afcff,
+  0xff7bfa03, 0xffff7b7b, 0xff7b2cff, 0xff397aff
+};
+
+static uint8_t dvd_len = sizeof(dvd) / sizeof(*dvd);
+static uint8_t colors_len = sizeof(colors) / sizeof(*colors);
+static uint8_t cur_color = 0;
+
+static Px F  = { 0 };
 static Px B  = { 0x00, 0x00, 0xee, 0xff };
 static Px *p = NULL;
 
@@ -59,6 +72,7 @@ void show_dvd(int x, int y) {
 int main(void) {
   int i, j;
   float x = (float)WIDTH / 2, y = (float)HEIGHT / 2, vx = 0.75, vy = -0.75;
+  update_color();
 
   p = spxeStart("dvd", WIN_WIDTH, WIN_HEIGHT, WIDTH, HEIGHT);
 
@@ -79,14 +93,22 @@ int main(void) {
         set(j, i, B);
 
     /* logic */
-    if (x + 32 >= WIDTH - BORDER_SIZE)
+    if (x + 32 >= WIDTH - BORDER_SIZE) {
       vx = -vx;
-    if (x <= 0 + BORDER_SIZE)
+      update_color();
+    }
+    if (x <= 0 + BORDER_SIZE) {
       vx = -vx;
-    if (y >= HEIGHT - BORDER_SIZE)
+      update_color();
+    }
+    if (y >= HEIGHT - BORDER_SIZE) {
       vy = -vy;
-    if (y - 32 <= 0 + BORDER_SIZE)
+      update_color();
+    }
+    if (y - 32 <= 0 + BORDER_SIZE) {
       vy = -vy;
+      update_color();
+    }
 
     x += vx, y += vy;
     show_dvd(floor(x), floor(y));
