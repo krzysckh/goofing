@@ -6,7 +6,7 @@ CC=clang
 CFLAGS="-Wall -Wextra"
 
 build_uxn() {
-  [ ! -f ./chibicc ] && git submodule update --init --recursive
+  [ ! -d ./chibicc ] && git submodule update --init --recursive
   [ ! -f ./chibicc/chibicc ] && {
     cd chibicc || exit 1
     make
@@ -27,6 +27,7 @@ build() {
   $CC -o dvd `pkg-config --cflags --libs glfw3 glew` -lm $CFLAGS dvd.c
   build_uxn "./sand-uxn.c" "./sand-uxn.rom"
   build_uxn "./snake.c" "./snake.rom"
+  build_uxn "./saper.c" "./saper.rom"
 }
 
 clean() {
@@ -36,8 +37,9 @@ clean() {
 publish() {
   build
 
-  yes | pubcpy snake.rom
-  yes | pubcpy sand-uxn.rom
+  for i in *.rom; do
+    yes | pubcpy "$i"
+  done
 }
 
 case "$1" in

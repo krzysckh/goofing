@@ -14,6 +14,7 @@
 #define i32 int32_t
 
 #define dpixel(x,y,c) { set_screen_xy((x), (y)); draw_pixel((c)); }
+#define srandt() srand(datetime_second() + (datetime_minute() * 60))
 
 /* lmao */
 u32 _rand_seed_state = 2139;
