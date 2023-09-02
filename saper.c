@@ -23,12 +23,15 @@ enum {
 u8 state[bw * bh];
 i8 nbord[bw * bh];
 
-u8 lost = 0;
+u8 lost = 0, shocked = 0, won = 0;
+u32 good = 0, nbombs = 0, picks = 0;
 
-u8 block[8] = { 0x7e, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x7e };
-u8 sad[8]   = { 0xff, 0x81, 0xa5, 0x81, 0x99, 0xa5, 0x81, 0xff };
-u8 happy[8] = { 0xff, 0x81, 0xa5, 0x81, 0xa5, 0x99, 0x81, 0xff };
-u8 N[9][8]  = {
+u8 block[8]   = { 0x7e, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x7e };
+u8 sad[8]     = { 0xff, 0x81, 0xa5, 0x81, 0x99, 0xa5, 0x81, 0xff };
+u8 happy[8]   = { 0xff, 0x81, 0xa5, 0x81, 0xa5, 0x99, 0x81, 0xff };
+u8 shock[8]   = { 0xff, 0x81, 0xa5, 0x81, 0x99, 0xa5, 0x99, 0xff };
+u8 glasses[8] = { 0xff, 0x81, 0xff, 0xff, 0x81, 0xa5, 0x99, 0xff };
+u8 N[9][8]    = {
   { 0, 0,    0,    0x18, 0x18, 0,    0,    0, },
   { 0, 0x10, 0x30, 0x10, 0x10, 0x10, 0x10, 0, },
   { 0, 0x38, 0x44, 0x48, 0x10, 0x20, 0x7c, 0, },
@@ -43,7 +46,7 @@ u8 N[9][8]  = {
 void grid(void) {
   u16 i, j;
 
-  for (i = (H - W); i < H; i += 8)
+  for (i = (H - W) + 8; i < H; i += 8)
     for (j = 0; j < W; j += 2)
       dpixel(j - 1, i, 2);
 
@@ -61,36 +64,83 @@ void lose(void) {
       at(j, i) = at(j, i) | tshow;
 }
 
+void win(void) {
+  set_screen_xy((W/2) - 4, 8);
+  set_screen_addr(glasses);
+  draw_sprite(14);
+
+  won = 1;
+}
+
+void show_near(i8 x, i8 y) {
+  i8 dx, dy;
+  if (bat(x, y) != 0) return;
+
+  at(x, y) = at(x, y) | tshow;
+  for (dy = -1; dy <= 1; ++dy) {
+    for (dx = -1; dx <= 1; ++dx) {
+      if (dx == 0 && dy == 0) continue;
+      if (x + dx >= bw) continue;
+      if (x + dx < 0) continue;
+      if (y + dy >= bh) continue;
+      if (y + dy < 0) continue;
+
+      if (!(at(x + dx, y + dy) & tshow))
+        show_near(x + dx, y + dy);
+    }
+  }
+}
+
 void on_mouse(void) {
   u8 rx, ry;
 
   rx = mouse_x() / 8;
   ry = (mouse_y() - (H - W)) / 8;
 
+  shocked = 0;
+  if (mouse_state() & 1)
+    if (mouse_x() > (W/2) - 4 && mouse_x() < (W/2) + 4 && mouse_y() > 8
+        && mouse_y() < 16)
+      shocked = 1;
+
   /* check for clicking @ the board */
-  if (lost) return;
+  if (lost || won) return;
 
   if (mouse_state() & 4) {
-    if (!mouse_y() >= (H - W))
+    if (mouse_y() < (H - W))
       return;
 
-    if (at(rx, ry) & tmark)
+    if (at(rx, ry) & tmark) {
       at(rx, ry) = at(rx, ry) ^ tmark;
-    else
+      picks--;
+      if (at(rx, ry) & tbomb)
+        good--;
+    } else {
       at(rx, ry) = at(rx, ry) | tmark;
+      picks++;
+      if (at(rx, ry) & tbomb)
+        good++;
+    }
   }
   if (mouse_state() & 1) {
-    if (!mouse_y() >= (H - W))
+    if (mouse_y() < (H - W))
       return;
 
     at(rx, ry) = at(rx, ry) | tshow;
+    show_near(rx, ry);
     if (at(rx, ry) & tbomb)
       lose();
   }
+
 }
 
 void on_screen(void) {
   u32 i, j;
+
+  if (good == nbombs && good == picks) {
+    win();
+    return;
+  }
 
   set_screen_xy(0, 0);
   draw_pixel(BgFillBR);
@@ -99,7 +149,7 @@ void on_screen(void) {
   if (lost)
     set_screen_addr(sad);
   else
-    set_screen_addr(happy);
+    set_screen_addr(shocked ? shock : happy);
   draw_sprite(14);
 
   for (i = 0; i < 8; ++i) {
@@ -135,9 +185,10 @@ void main(void) {
 
   /* init states */
   for (i = 0; i < bw * bh; ++i)
-    if (rand() % 100 < bombp)
+    if (rand() % 100 < bombp) {
       state[i] = tbomb;
-    else
+      nbombs++;
+    } else
       state[i] = tnone;
 
   for (i = 0; i < bh; ++i) {
@@ -161,5 +212,4 @@ void main(void) {
       }
     }
   }
-
 }
