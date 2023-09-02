@@ -20,8 +20,24 @@ build_uxn() {
   ./chibicc/chibicc -O1 "$in.cpp.c" > "$in.tal"
   uxnasm "$in.tal" "$out"
 
-  rm -f "$in.cpp.c" "$in.tal"
+  rm -f "$in.cpp.c" "$in.tal" "$out.sym"
 }
 
-$CC -o dvd `pkg-config --cflags --libs glfw3 glew` -lm $CFLAGS dvd.c
-build_uxn "./sand-uxn.c" "./sand-uxn.rom"
+build() {
+  $CC -o dvd `pkg-config --cflags --libs glfw3 glew` -lm $CFLAGS dvd.c
+  build_uxn "./sand-uxn.c" "./sand-uxn.rom"
+  build_uxn "./snake.c" "./snake.rom"
+}
+
+clean() {
+  rm -f ./*.html ./*.rom dvd
+}
+
+case "$1" in
+  clean)
+    clean
+    ;;
+  *)
+    build
+    ;;
+esac
