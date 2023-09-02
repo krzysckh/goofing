@@ -30,12 +30,22 @@ build() {
 }
 
 clean() {
-  rm -f ./*.html ./*.rom dvd
+  rm -f ./*.rom dvd
+}
+
+publish() {
+  build
+
+  yes | pubcpy snake.rom
+  yes | pubcpy sand-uxn.rom
 }
 
 case "$1" in
   clean)
     clean
+    ;;
+  publish)
+    publish
     ;;
   *)
     build
