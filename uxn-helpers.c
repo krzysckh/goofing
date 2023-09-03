@@ -15,6 +15,30 @@
 
 #define dpixel(x,y,c) { set_screen_xy((x), (y)); draw_pixel((c)); }
 #define srandt() srand(datetime_second() + (datetime_minute() * 60))
+#define puts(s) pputs(1, 0, s)
+#define eputs(s) pputs(1, 1, s)
+#define error(s) { pputs(0, 1, "error: "); eputs(s); exit(1); }
+#define putd(n) { pputd(n); putchar('\n'); }
+
+#define isdigit(d) ((d) >= '0' && (d) <= '9')
+#define strcpy(a, b) strncpy(a, b, strlen(b))
+
+#ifdef USE_FONT
+#include "font.h"
+
+void Vputc(u32 x, u32 y, u8 chr, u8 color) {
+  set_screen_addr(font[chr]);
+  set_screen_xy(x, y);
+  draw_sprite(color);
+}
+
+void Vprint(u32 x, u32 y, u8 *s, u8 color) {
+  while (*s) {
+    Vputc(x, y, *s, color);
+    x += 8, s++;
+  }
+}
+#endif
 
 /* lmao */
 u32 _rand_seed_state = 2139;
@@ -32,12 +56,46 @@ void srand(u32 x) {
   _rand_seed_state = x;
 }
 
-/* functions starting with an underscore cause a stack overflow.
- * my guess is that they are compiled to the same symbols as the ones without it
- * _puts == puts
- *
- * i guess
- */
+u32 strlen(u8 *s) {
+  u32 i = 0;
+  while (*s)
+    i++, s++;
+
+  return i;
+}
+
+/* non-standard. just compares strings */
+u8 strcmp(u8 *s1, u8 *s2) {
+  if (strlen(s1) != strlen(s2)) return 1;
+
+  while (*s1)
+    if (*s1 != *s2)
+      return 1;
+    else
+      s1++, s2++;
+
+  return 0;
+}
+
+i32 atoi(u8 *_s) {
+  i32 r = 0, ctr = 1;
+  u8 *s = _s + strlen(_s) - 1;
+
+  while (s >= _s) {
+    if (s == _s && *s == '-') return -r;
+    r += (ctr) * (*s - '0');
+    ctr *= 10, s--;
+  }
+
+  return r;
+}
+
+void strncpy(u8 *a, u8 *b, u32 n) {
+  while ((*a++ = *b++) && n--)
+    ;
+
+  *a = 0;
+}
 
 void pputs(int nl, int err, char *s) {
   while (*s) {
@@ -54,21 +112,13 @@ void pputs(int nl, int err, char *s) {
   }
 }
 
-void puts(char *s) {
-  pputs(1, 0, s);
-}
-
-void eputs(char *s) {
-  pputs(1, 1, s);
-}
-
-void error(char *s) {
-  pputs(0, 1, "error: ");
-  eputs(s);
-}
-
-void pputd(u32 n) {
+void pputd(i32 n) {
   u32 a;
+  if (n < 0) {
+    putchar('-');
+    n = -n;
+  }
+
   if (n > 9) {
     a = n / 10;
     n -= 10 * a;
@@ -77,9 +127,3 @@ void pputd(u32 n) {
 
   putchar('0' + n);
 }
-
-void putd(int n) {
-  pputd(n);
-  putchar('\n');
-}
-

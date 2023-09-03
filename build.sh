@@ -28,6 +28,7 @@ build() {
   build_uxn "./sand-uxn.c" "./sand-uxn.rom"
   build_uxn "./snake.c" "./snake.rom"
   build_uxn "./saper.c" "./saper.rom"
+  build_uxn "./sheet.c" "./sheet.rom"
 }
 
 clean() {
