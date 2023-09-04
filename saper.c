@@ -1,8 +1,6 @@
 #include <varvara.h>
 #include "uxn-helpers.c"
 
-#warning unfinished (no way to win)
-
 #define W 64     /* window sizes */
 #define H 96
 #define bw 8     /* board sizes */

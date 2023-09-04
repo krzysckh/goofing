@@ -24,10 +24,17 @@
 #define strcpy(a, b) strncpy(a, b, strlen(b))
 
 #ifdef USE_FONT
-#include "font.h"
+#ifdef FONT_ATARI
+#include "atari8.h"
+#define FF atari8
+#else
+#include "vga-font.h"
+#define FF vga_font
+#endif
+
 
 void Vputc(u32 x, u32 y, u8 chr, u8 color) {
-  set_screen_addr(font[chr]);
+  set_screen_addr(FF[chr]);
   set_screen_xy(x, y);
   draw_sprite(color);
 }
@@ -56,12 +63,59 @@ void srand(u32 x) {
   _rand_seed_state = x;
 }
 
+void memset(u8 *s, u32 c, u32 n) {
+  while (n--)
+    *s++ = c;
+}
+
+void draw_rect(u32 _x1, u32 y1, u32 x2, u32 y2, u8 c) {
+  u32 x1 = _x1;
+  for (; x1 <= x2; ++x1) {
+    dpixel(x1, y1, c);
+    dpixel(x1, y2, c);
+  }
+
+  x1 = _x1;
+  for (; y1 <= y2; ++y1) {
+    dpixel(x1, y1, c);
+    dpixel(x2, y1, c);
+  }
+}
+
 u32 strlen(u8 *s) {
   u32 i = 0;
   while (*s)
     i++, s++;
 
   return i;
+}
+
+u8 *strrev(u8 *s) {
+  u8 *e = s + strlen(s) - 1, t;
+
+  while (e > s) {
+    t = *s, *s = *e, *e = t;
+    ++s, --e;
+  }
+
+  return s;
+}
+
+void itos(i32 n, u8 *buf) {
+  i32 a;
+  if (n < 0) {
+    *buf = '-', buf++;
+    n = -n;
+  }
+
+  while (n > 9) {
+    a = n / 10;
+    n -= 10 * a;
+    itos(a, buf + 1);
+  }
+
+  *buf = '0' + n;
+  strrev(buf);
 }
 
 /* non-standard. just compares strings */
