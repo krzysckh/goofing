@@ -52,8 +52,8 @@ void update_pos(struct pos *P) {
 
 /* TODO: some 'you lost' screen */
 void lost() {
-  puts("lost");
-  exit(1);
+  eputs("lost");
+  main();
 }
 
 u8 check_lost() {
@@ -69,6 +69,10 @@ void on_controller(void) {
     case ButtonDown:  tail->d = dS; break;
     case ButtonLeft:  tail->d = dW; break;
     case ButtonRight: tail->d = dE; break;
+  }
+
+  switch (controller_key()) {
+    case 'r': main(); return;
   }
 
   for (i = 1; i < tailsz; ++i)
@@ -119,6 +123,7 @@ void on_screen(void) {
 
 void main (void) {
   srand(datetime_second() + datetime_minute() * 60);
+  tailsz = 1, newtail = 0, timer = 0;
 
   set_palette(0x08ae, 0x0c01, 0x44f1);
   set_screen_size(W, H);
