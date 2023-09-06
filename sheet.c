@@ -32,9 +32,10 @@
 #define cur_values() (cur_cell[0] - 'a'), (atoi(cur_cell + 1 == '0' ? \
                                                 cur_cell + 2 : cur_cell + 1))
 
+i32 cache[SHEET_WIDTH * SHEET_HEIGHT];
 u8 cur_cell[4] = { 0 };
-u8 cur_input[CUR_INPUT_SZ] = { 0 };
 u32 cur_input_ptr = 0;
+u8 cur_input[CUR_INPUT_SZ] = { 0 };
 
 u8 cursor[8] = {
   0b10000000,
@@ -66,7 +67,17 @@ void xytonam(u8 x, u8 y, u8 nam[4]) {
   nam[3] = 0;
 }
 
-void get_input(void) {
+void load_cache(void) {
+  u32 i, j;
+  u8 nam[4];
+
+  for (i = 0; i < SHEET_HEIGHT; ++i) {
+    for (j = 0; j < SHEET_WIDTH; ++j) {
+      memset(nam, 0, 4);
+      xytonam(j, i, nam);
+      cache[(i * SHEET_HEIGHT) + j] = calc_get(nam);
+    }
+  }
 }
 
 void highlight_cell(u8 x, u8 y) {
@@ -94,6 +105,8 @@ void eval_cur(void) {
   calc_set(cur_cell, calc(cur_input));
   memset(cur_input, 0, CUR_INPUT_SZ);
   cur_input_ptr = 0;
+
+  load_cache();
 }
 
 void on_controller(void) {
@@ -126,7 +139,7 @@ void on_mouse() {
 }
 
 void on_screen() {
-  u8 nam[4], buf[64];
+  u8 buf[64];
   i32 i, j;
 
   dpixel(0, 0, BgFillBR);
@@ -140,9 +153,7 @@ void on_screen() {
   for (i = 0; i < SHEET_HEIGHT; ++i) {
     for (j = 0; j < SHEET_WIDTH; ++j) {
       memset(buf, 0, 64);
-      memset(nam, 0, 4);
-      xytonam(j, i, nam);
-      itos(calc_get(nam), buf);
+      itos(cache[(i * SHEET_HEIGHT) + j], buf);
       cell_print(j, i, buf);
     }
   }
@@ -170,4 +181,6 @@ void main(void) {
       calc_set(nam, 0);
     }
   }
+
+  load_cache();
 }
