@@ -24,6 +24,11 @@ case "$1" in
   com)
     doas minicom -D $board
     ;;
+  install-py)
+    doas mount /dev/sd1i /mnt
+    cd /mnt
+    doas wget https://micropython.org/download/rp2-pico/rp2-pico-latest.uf2
+    ;;
 esac
 
 #[ -z "$nam" ] && exit 1

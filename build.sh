@@ -29,6 +29,7 @@ build() {
   build_uxn "./snake.c" "./snake.rom"
   build_uxn "./saper.c" "./saper.rom"
   build_uxn "./sheet.c" "./sheet.rom"
+  build_uxn "./uxneyes.c" "./uxneyes.rom"
 }
 
 clean() {
