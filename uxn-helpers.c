@@ -117,6 +117,7 @@ void itos(i32 n, u8 *buf) {
   *buf = '0' + n;
   strrev(buf);
 }
+#define itoa(n, buf) itos(n, buf)
 
 /* non-standard. just compares strings */
 u8 strcmp(u8 *s1, u8 *s2) {
