@@ -3,7 +3,7 @@
 set -xe
 
 CC=clang
-CFLAGS="-Wall -Wextra"
+CFLAGS="-Wall -Wextra -I/usr/local/include"
 
 build_uxn() {
   [ ! -d ./chibicc ] && git submodule update --init --recursive
