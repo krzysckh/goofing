@@ -1,3 +1,5 @@
+#define __uxn__
+
 #define uint8_t unsigned char
 #define uint16_t unsigned short int
 #define uint32_t unsigned int
@@ -22,6 +24,7 @@
 
 #define isdigit(d) ((d) >= '0' && (d) <= '9')
 #define strcpy(a, b) strncpy(a, b, strlen(b))
+#define abs(x) ((x) < 0 ? -(x) : (x))
 
 #ifdef USE_FONT
 #ifdef FONT_ATARI
@@ -52,11 +55,11 @@ u32 _rand_seed_state = 2139;
 
 /* https://en.wikipedia.org/wiki/Xorshift */
 u32 rand() {
-	u32 x = _rand_seed_state;
-	x ^= x << 13;
-	x ^= x >> 17;
-	x ^= x << 5;
-	return _rand_seed_state = x;
+  u32 x = _rand_seed_state;
+  x ^= x << 13;
+  x ^= x >> 17;
+  x ^= x << 5;
+  return _rand_seed_state = x;
 }
 
 void srand(u32 x) {
