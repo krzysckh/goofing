@@ -10,6 +10,7 @@
 #define u8 uint8_t
 #define u16 uint16_t
 #define u32 uint32_t
+/* well u32 is actually a u16 but shhhhh */
 
 #define i8 int8_t
 #define i16 int16_t
@@ -54,11 +55,12 @@ void Vprint(u32 x, u32 y, u8 *s, u8 color) {
 u32 _rand_seed_state = 2139;
 
 /* https://en.wikipedia.org/wiki/Xorshift */
+/* i had to /2 sume numbers because sizeof(u32) != 4 LMAOOOO */
 u32 rand() {
   u32 x = _rand_seed_state;
-  x ^= x << 13;
-  x ^= x >> 17;
-  x ^= x << 5;
+  x ^= x << 3;
+  x ^= x >> 7;
+  x ^= x << 1;
   return _rand_seed_state = x;
 }
 
@@ -185,3 +187,4 @@ void pputd(i32 n) {
 
   putchar('0' + n);
 }
+

@@ -1,3 +1,4 @@
 *.cpp.c
 *.rom
 *.tal
+*node_modules*
