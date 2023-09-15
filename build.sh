@@ -35,7 +35,7 @@ build() {
 }
 
 clean() {
-  rm -f ./*.rom dvd
+  rm -fr ./*.rom dvd ./*.toc build/ dist/ ./*.spec
 }
 
 publish() {
@@ -46,14 +46,16 @@ publish() {
   done
 }
 
-case "$1" in
-  clean)
-    clean
-    ;;
-  publish)
-    publish
-    ;;
-  *)
-    build
-    ;;
-esac
+build_scpg() {
+  win_pyinstaller="$HOME/.wine/drive_c/users/`whoami`/AppData/Local/Programs/Python/Python311/Scripts/pyinstaller.exe"
+
+  wine "$win_pyinstaller" -F -w --collect-data sv_ttk \
+    --collect-data paramiko \
+    --collect-data scp ./scpg.py
+}
+
+if [ -z "$1" ]; then
+  build
+else
+  $1
+fi

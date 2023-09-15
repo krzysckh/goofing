@@ -2,3 +2,7 @@
 *.rom
 *.tal
 *node_modules*
+build/*
+dist/*
+*.spec
+*.toc
