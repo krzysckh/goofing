@@ -6,3 +6,4 @@ build/*
 dist/*
 *.spec
 *.toc
+*.png
