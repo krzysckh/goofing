@@ -22,7 +22,7 @@ u8 state[bw * bh];
 i8 nbord[bw * bh];
 
 u8 lost = 0, shocked = 0, won = 0;
-u32 good = 0, nbombs = 0, picks = 0;
+u16 good = 0, nbombs = 0, picks = 0;
 
 u8 block[8]   = { 0x7e, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x7e };
 u8 sad[8]     = { 0xff, 0x81, 0xa5, 0x81, 0x99, 0xa5, 0x81, 0xff };
@@ -133,7 +133,7 @@ void on_mouse(void) {
 }
 
 void on_screen(void) {
-  u32 i, j;
+  u16 i, j;
 
   if (good == nbombs && good == picks) {
     win();

@@ -7,7 +7,7 @@
 #define H W
 
 void main(void) {
-  u32 i, x1 = 0, y1 = 0, x2 = 170, y2 = H;
+  u16 i, x1 = 0, y1 = 0, x2 = 170, y2 = H;
 
   set_screen_size(W, H);
   set_palette(0x0fff, 0x0fff, 0x0fff);

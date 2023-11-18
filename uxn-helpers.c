@@ -1,20 +1,27 @@
 #define __uxn__
 
+#define size_t u16
+#define INT_MAX 32768
+#define INT_MIN -INT_MAX
+#define SHRT_MAX 127
+#define SHRT_MIN -127
+
 #define uint8_t unsigned char
+#define int8_t  signed char
 #define uint16_t unsigned short int
-#define uint32_t unsigned int
-#define int8_t signed char
 #define int16_t signed short int
-#define int32_t signed int
 
 #define u8 uint8_t
 #define u16 uint16_t
-#define u32 uint32_t
-/* well u32 is actually a u16 but shhhhh */
 
 #define i8 int8_t
 #define i16 int16_t
-#define i32 int32_t
+
+#define NULL ((void*)0)
+#define nil NULL
+#define true 1
+#define false 0
+#define nullptr 1 /* i am sending hate to all the C++ developers */
 
 #define dpixel(x,y,c) { set_screen_xy((x), (y)); draw_pixel((c)); }
 #define srandt() srand(datetime_second() + (datetime_minute() * 60))
@@ -22,6 +29,7 @@
 #define eputs(s) pputs(1, 1, s)
 #define error(s) { pputs(0, 1, "error: "); eputs(s); exit(1); }
 #define putd(n) { pputd(n); putchar('\n'); }
+#define assert(x) { if (!(x)) { eputs(#x); error("assertion failed."); } }
 
 #define isdigit(d) ((d) >= '0' && (d) <= '9')
 #define strcpy(a, b) strncpy(a, b, strlen(b))
@@ -37,13 +45,13 @@
 #endif
 
 
-void Vputc(u32 x, u32 y, u8 chr, u8 color) {
+void Vputc(u16 x, u16 y, u8 chr, u8 color) {
   set_screen_addr(FF[chr]);
   set_screen_xy(x, y);
   draw_sprite(color);
 }
 
-void Vprint(u32 x, u32 y, u8 *s, u8 color) {
+void Vprint(u16 x, u16 y, u8 *s, u8 color) {
   while (*s) {
     Vputc(x, y, *s, color);
     x += 8, s++;
@@ -52,29 +60,29 @@ void Vprint(u32 x, u32 y, u8 *s, u8 color) {
 #endif
 
 /* lmao */
-u32 _rand_seed_state = 2139;
+u16 _rand_seed_state = 2139;
 
 /* https://en.wikipedia.org/wiki/Xorshift */
-/* i had to /2 sume numbers because sizeof(u32) != 4 LMAOOOO */
-u32 rand() {
-  u32 x = _rand_seed_state;
+/* i had to /2 sume numbers because there's no u32 */
+u16 rand() {
+  u16 x = _rand_seed_state;
   x ^= x << 3;
   x ^= x >> 7;
   x ^= x << 1;
   return _rand_seed_state = x;
 }
 
-void srand(u32 x) {
+void srand(u16 x) {
   _rand_seed_state = x;
 }
 
-void memset(u8 *s, u32 c, u32 n) {
+void memset(u8 *s, u16 c, u16 n) {
   while (n--)
     *s++ = c;
 }
 
-void draw_rect(u32 _x1, u32 y1, u32 x2, u32 y2, u8 c) {
-  u32 x1 = _x1;
+void draw_rect(u16 _x1, u16 y1, u16 x2, u16 y2, u8 c) {
+  u16 x1 = _x1;
   for (; x1 <= x2; ++x1) {
     dpixel(x1, y1, c);
     dpixel(x1, y2, c);
@@ -87,8 +95,8 @@ void draw_rect(u32 _x1, u32 y1, u32 x2, u32 y2, u8 c) {
   }
 }
 
-u32 strlen(u8 *s) {
-  u32 i = 0;
+u16 strlen(u8 *s) {
+  u16 i = 0;
   while (*s)
     i++, s++;
 
@@ -106,8 +114,8 @@ u8 *strrev(u8 *s) {
   return s;
 }
 
-void itos(i32 n, u8 *buf) {
-  i32 a;
+void itos(i16 n, u8 *buf) {
+  i16 a;
   if (n < 0) {
     *buf = '-', buf++;
     n = -n;
@@ -137,8 +145,8 @@ u8 strcmp(u8 *s1, u8 *s2) {
   return 0;
 }
 
-i32 atoi(u8 *_s) {
-  i32 r = 0, ctr = 1;
+i16 atoi(u8 *_s) {
+  i16 r = 0, ctr = 1;
   u8 *s = _s + strlen(_s) - 1;
 
   while (s >= _s) {
@@ -150,11 +158,16 @@ i32 atoi(u8 *_s) {
   return r;
 }
 
-void strncpy(u8 *a, u8 *b, u32 n) {
+void strncpy(u8 *a, u8 *b, u16 n) {
   while ((*a++ = *b++) && n--)
     ;
 
   *a = 0;
+}
+
+void memcpy(u8 *a, u8 *b, u16 n) {
+  while ((*a++ = *b++) && n--)
+    ;
 }
 
 void pputs(int nl, int err, char *s) {
@@ -172,8 +185,8 @@ void pputs(int nl, int err, char *s) {
   }
 }
 
-void pputd(i32 n) {
-  u32 a;
+void pputd(i16 n) {
+  u16 a;
   if (n < 0) {
     putchar('-');
     n = -n;

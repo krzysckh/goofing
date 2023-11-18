@@ -32,9 +32,9 @@
 #define cur_values() (cur_cell[0] - 'a'), (atoi(cur_cell + 1 == '0' ? \
                                                 cur_cell + 2 : cur_cell + 1))
 
-i32 cache[SHEET_WIDTH * SHEET_HEIGHT];
+i16 cache[SHEET_WIDTH * SHEET_HEIGHT];
 u8 cur_cell[4] = { 0 };
-u32 cur_input_ptr = 0;
+u16 cur_input_ptr = 0;
 u8 cur_input[CUR_INPUT_SZ] = { 0 };
 
 u8 cursor[8] = {
@@ -49,7 +49,7 @@ u8 cursor[8] = {
 };
 
 void grid(u8 c) {
-  u32 i, j;
+  u16 i, j;
 
   for (i = 0; i < SHEET_HEIGHT; ++i)
     for (j = 0; j < WIDTH; j ++)
@@ -68,7 +68,7 @@ void xytonam(u8 x, u8 y, u8 nam[4]) {
 }
 
 void load_cache(void) {
-  u32 i, j;
+  u16 i, j;
   u8 nam[4];
 
   for (i = 0; i < SHEET_HEIGHT; ++i) {
@@ -81,7 +81,7 @@ void load_cache(void) {
 }
 
 void highlight_cell(u8 x, u8 y) {
-  u32 x1 = x * CELL_WIDTH, y1 = y * CELL_HEIGHT + 1 + INPUTBAR_HEIGHT;
+  u16 x1 = x * CELL_WIDTH, y1 = y * CELL_HEIGHT + 1 + INPUTBAR_HEIGHT;
   u8 nam[4];
 
   xytonam(x, y, nam);
@@ -140,7 +140,7 @@ void on_mouse() {
 
 void on_screen() {
   u8 buf[64];
-  i32 i, j;
+  i16 i, j;
 
   dpixel(0, 0, BgFillBR);
   dpixel(0, 0, FgFillBR);
@@ -168,7 +168,7 @@ void on_screen() {
 }
 
 void main(void) {
-  u32 i, j;
+  u16 i, j;
   u8 nam[4];
 
   set_screen_size(WIDTH, HEIGHT);

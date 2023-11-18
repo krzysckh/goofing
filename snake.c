@@ -12,11 +12,11 @@ enum       { dN, dE, dS, dW }; /* north, east, south and west */
 u8 block[8] = { 0x7e, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x7e };
 
 struct pos tail[AW * AH], apple;
-u32 tailsz = 1;
+u16 tailsz = 1;
 u8 newtail = 0, timer = 0;
 
 u8 in_snake(u8 x, u8 y, u8 start) {
-  u32 i;
+  u16 i;
 
   for (i = start; i < tailsz; ++i)
     if (tail[i].x == x && tail[i].y == y)
@@ -80,7 +80,7 @@ void on_controller(void) {
 }
 
 void on_screen(void) {
-  u32 i;
+  u16 i;
   if (timer % 15 == 0) {
     set_screen_xy(0, 0);
     draw_pixel(BgFillBR);

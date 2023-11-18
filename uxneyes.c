@@ -36,7 +36,7 @@
 u8 C[]={128,192,224,64,0,0,0,0},B[]={0,60,126,126,126,126,60,0},l,L,r;
 
 void on_screen(void) {
-  i32 mx = mouse_x(), my = mouse_y();
+  i16 mx = mouse_x(), my = mouse_y();
 
   set_screen_xy(0,0);
   draw_pixel(128);

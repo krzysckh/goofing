@@ -33,6 +33,7 @@ build() {
   build_uxn "./uxneyes.c" "./uxneyes.rom"
   build_uxn "./line-test.c" "./line-test.rom"
   build_uxn "./bit-demo.c" "./bit-demo.rom"
+  build_uxn "./sizeof.c" "./sizeof.rom"
 }
 
 clean() {

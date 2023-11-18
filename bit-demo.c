@@ -1,17 +1,17 @@
 #include <varvara.h>
 #include "uxn-helpers.c"
 
-u32 W = 128;
-u32 H = 128;
+u16 W = 128;
+u16 H = 128;
 
 u8 speed = 64;
 
-u8 f(u32 x, u32 y) {
+u8 f(u16 x, u16 y) {
   return (x ^ y) % 9;
 }
 
 void on_screen(void) {
-  u32 x, y, i;
+  u16 x, y, i;
 
   for (i = 0; i < speed; ++i) {
     x = rand() % W, y = rand() % H;
