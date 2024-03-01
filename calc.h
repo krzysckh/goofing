@@ -63,6 +63,7 @@ signed int calc_get(char *name) {
     if (strcmp(calc_variable[i].name, name) == 0)
       return calc_variable[i].v;
 
+  CALC_ERR_FUNCTION(name);
   CALC_ERR_FUNCTION("no such variable");
   return 0;
 }

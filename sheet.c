@@ -178,6 +178,7 @@ void main(void) {
   for (i = 0; i < SHEET_HEIGHT; ++i) {
     for (j = 0; j < SHEET_WIDTH; ++j) {
       xytonam(j, i, nam);
+      puts(nam);
       calc_set(nam, 0);
     }
   }

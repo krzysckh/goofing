@@ -6,11 +6,29 @@ u16 H = 128;
 
 u8 speed = 64;
 
-u8 f(u16 x, u16 y) {
+u8
+f(u16 x, u16 y)
+{
   return (x ^ y) % 9;
 }
 
-void on_screen(void) {
+void
+on_controller()
+{
+  set_screen_xy(0, 0);
+
+  switch (controller_key()) {
+  case 'q': exit(0); break;
+  case 'r':
+    draw_pixel(FgFillBR);
+    draw_pixel(BgFillBR);
+    break;
+  }
+}
+
+void
+on_screen(void)
+{
   u16 x, y, i;
 
   for (i = 0; i < speed; ++i) {
@@ -19,7 +37,9 @@ void on_screen(void) {
   }
 }
 
-void main(void) {
+void
+main(void)
+{
   srand(32);
   set_palette(0x0fff, 0x0fff, 0x0fff);
   set_screen_size(W, H);

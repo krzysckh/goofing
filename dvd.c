@@ -85,7 +85,7 @@ int main(void) {
       set(j, i, B);
 
   while (spxeRun(p)) {
-    if (spxeKeyPressed(ESCAPE)) break;
+    if (spxeKeyPressed(KEY_ESCAPE)) break;
 
     /* clear after the one before */
     for (i = floor(y) - 1; i > floor(y) - 32; --i)
