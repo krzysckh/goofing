@@ -25,6 +25,7 @@
 
 #define dpixel(x,y,c) { set_screen_xy((x), (y)); draw_pixel((c)); }
 #define srandt() srand(datetime_second() + (datetime_minute() * 60))
+#define nputs(s) pputs(0, 0, s)
 #define puts(s) pputs(1, 0, s)
 #define eputs(s) pputs(1, 1, s)
 #define error(s) { pputs(0, 1, "error: "); eputs(s); exit(1); }
@@ -45,13 +46,17 @@
 #endif
 
 
-void Vputc(u16 x, u16 y, u8 chr, u8 color) {
+void
+Vputc(u16 x, u16 y, u8 chr, u8 color)
+{
   set_screen_addr(FF[chr]);
   set_screen_xy(x, y);
   draw_sprite(color);
 }
 
-void Vprint(u16 x, u16 y, u8 *s, u8 color) {
+void
+Vprint(u16 x, u16 y, u8 *s, u8 color)
+{
   while (*s) {
     Vputc(x, y, *s, color);
     x += 8, s++;
@@ -64,7 +69,9 @@ u16 _rand_seed_state = 2139;
 
 /* https://en.wikipedia.org/wiki/Xorshift */
 /* i had to /2 sume numbers because there's no u32 */
-u16 rand() {
+u16
+rand()
+{
   u16 x = _rand_seed_state;
   x ^= x << 3;
   x ^= x >> 7;
@@ -72,16 +79,22 @@ u16 rand() {
   return _rand_seed_state = x;
 }
 
-void srand(u16 x) {
+void
+srand(u16 x)
+{
   _rand_seed_state = x;
 }
 
-void memset(u8 *s, u16 c, u16 n) {
+void
+memset(u8 *s, u16 c, u16 n)
+{
   while (n--)
     *s++ = c;
 }
 
-void draw_rect(u16 _x1, u16 y1, u16 x2, u16 y2, u8 c) {
+void
+draw_rect(u16 _x1, u16 y1, u16 x2, u16 y2, u8 c)
+{
   u16 x1 = _x1;
   for (; x1 <= x2; ++x1) {
     dpixel(x1, y1, c);
@@ -95,7 +108,9 @@ void draw_rect(u16 _x1, u16 y1, u16 x2, u16 y2, u8 c) {
   }
 }
 
-u16 strlen(u8 *s) {
+u16
+strlen(u8 *s)
+{
   u16 i = 0;
   while (*s)
     i++, s++;
@@ -103,7 +118,9 @@ u16 strlen(u8 *s) {
   return i;
 }
 
-u8 *strrev(u8 *s) {
+u8 *
+strrev(u8 *s)
+{
   u8 *e = s + strlen(s) - 1, t;
 
   while (e > s) {
@@ -114,12 +131,12 @@ u8 *strrev(u8 *s) {
   return s;
 }
 
-void itos(i16 n, u8 *buf) {
+void
+itos(i16 n, u8 *buf)
+{
   i16 a;
-  if (n < 0) {
-    *buf = '-', buf++;
-    n = -n;
-  }
+  if (n < 0)
+    *buf = '-', buf++, n = -n;
 
   while (n > 9) {
     a = n / 10;
@@ -133,7 +150,9 @@ void itos(i16 n, u8 *buf) {
 #define itoa(n, buf) itos(n, buf)
 
 /* non-standard. just compares strings */
-u8 strcmp(u8 *s1, u8 *s2) {
+u8
+strcmp(u8 *s1, u8 *s2)
+{
   if (strlen(s1) != strlen(s2)) return 1;
 
   while (*s1)
@@ -145,7 +164,9 @@ u8 strcmp(u8 *s1, u8 *s2) {
   return 0;
 }
 
-i16 atoi(u8 *_s) {
+i16
+atoi(u8 *_s)
+{
   i16 r = 0, ctr = 1;
   u8 *s = _s + strlen(_s) - 1;
 
@@ -158,19 +179,23 @@ i16 atoi(u8 *_s) {
   return r;
 }
 
-void strncpy(u8 *a, u8 *b, u16 n) {
-  while ((*a++ = *b++) && n--)
-    ;
-
-  *a = 0;
-}
-
-void memcpy(u8 *a, u8 *b, u16 n) {
+void
+memcpy(u8 *a, u8 *b, u16 n)
+{
   while ((*a++ = *b++) && n--)
     ;
 }
 
-void pputs(int nl, int err, char *s) {
+void
+strncpy(u8 *a, u8 *b, u16 n)
+{
+  memcpy(a, b, n);
+  a[n] = 0;
+}
+
+void
+pputs(int nl, int err, char *s)
+{
   while (*s) {
     if (err)
       console_error(*s);
@@ -185,7 +210,9 @@ void pputs(int nl, int err, char *s) {
   }
 }
 
-void pputd(i16 n) {
+void
+pputd(i16 n)
+{
   u16 a;
   if (n < 0) {
     putchar('-');
@@ -201,3 +228,23 @@ void pputd(i16 n) {
   putchar('0' + n);
 }
 
+/* get string up to newline, blocking */
+u16
+gets(u8 *buf, u16 max)
+{
+  u8 *bufstart = buf, c;
+  while (max) {
+    c = getchar();
+    putchar(c);
+    if (!c) continue;
+    if (c != '\n')
+      *buf++ = c;
+    else {
+      puts("newline");
+      break;
+    }
+    --max;
+  }
+
+  return buf - bufstart;
+}

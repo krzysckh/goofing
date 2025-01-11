@@ -26,8 +26,8 @@ build_uxn() {
 build() {
   # $CC -o dvd `pkg-config --cflags --libs glfw3 glew` -lm $CFLAGS dvd.c
   $CC -o marquee $CFLAGS marquee.c
-  $CC -o calc calc.c
   fpc gol.pas
+  build_uxn "./calc.c" "./calc.rom"
   build_uxn "./sand-uxn.c" "./sand-uxn.rom"
   build_uxn "./snake.c" "./snake.rom"
   build_uxn "./saper.c" "./saper.rom"

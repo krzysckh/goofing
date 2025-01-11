@@ -1,8 +1,7 @@
-#include <stdio.h>
-#include <ctype.h>
-#include <string.h>
-#include <stdlib.h>
+#include <varvara.h>
+#include "uxn-helpers.c"
 
+#define CALC_ERR_FUNCTION eputs
 #define CALC_N_VARIABLES 512
 #define CALC_VARIABLE_NAME_SIZE 8
 #define CALC_IMPLEMENTATION
@@ -12,24 +11,24 @@ void
 print_stack(void)
 {
   int i;
-  printf("stack = [");
+  puts("stack = [");
   for (i = 0; i < calc_stack_ptr; ++i)
-    printf("%u, ", calc_stack[i]);
-  printf("]\n");
+    putd(calc_stack[i]);
+  puts("]\n");
 }
 
-int
+void
 main(void)
 {
-  char buf[1024];
-  char *temp, *nam, *val;
-  signed int ret;
+  u8 buf[512]; //temp[512], nam[64], val[64];
+  i16 ret;
+  u16 read;
 
-  while (!feof(stdin)) {
+  while (1) {
     print_stack();
-    printf("> ");
-    fgets(buf, 1024, stdin);
-    buf[strlen(buf)-1] = 0;
+    puts("> ");
+    read = gets(buf, 512);
+    /*
     if (strcmp(buf, "pop") == 0)
       ret = calc_pop();
     else if (strncmp(buf, "set ", 4) == 0) {
@@ -43,10 +42,10 @@ main(void)
       free(val);
       ret = 0;
     } else
-      ret = calc(buf);
+    */
+    ret = calc((void*)buf);
 
-    printf("  %u\n", ret);
+    nputs("  ");
+    putd(ret);
   }
-
-  return 0;
 }
